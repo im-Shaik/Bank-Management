@@ -1,0 +1,56 @@
+.MuiInputBase-root {
+  width: 100% !important;
+  border-radius: 15px !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-color) !important;
+}
+
+.MuiFormLabel-root {
+  color: var(--text-color) !important;
+}
+
+.MuiInputBase-root::before,
+.MuiInputBase-root::after {
+  display: none !important;
+}
+
+/* mobile */
+@media only screen and (max-width: 768px) {
+  .login-left {
+    display: none;
+  }
+
+  .MuiContainer-root {
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .login-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100vh !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* 1024px */
+@media only screen and (max-width: 1024px) {
+  .login-left {
+    width: 250px !important;
+    height: 100% !important;
+  }
+
+  .login-right {
+    justify-self: normal !important;
+  }
+}
+/* 1024px */
+@media only screen and (max-width: 1178px) {
+  .login-right {
+    width: auto !important;
+    justify-self: stretch !important;
+  }
+}

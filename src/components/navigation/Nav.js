@@ -12,6 +12,7 @@ function Nav() {
   const [isActiveMobileNav, setActiveMobileNav] = useState(false);
   const [isDarkMode, setDarkMode] = useState(false);
   const navbarRef = useRef(null);
+  const linksRef = useRef(null);
   const [theme, setTheme] = useState(() => {
     // Get the saved theme from localStorage or default to "light"
     return localStorage.getItem("theme") || "light";
@@ -20,9 +21,22 @@ function Nav() {
   const links = [
     { label: "Home", path: "/" },
     { label: "About", path: "/about" },
+    { label: "Login", path: "/login" },
+    { label: "Sign-up", path: "/sign-up" },
     { label: "Services", path: "/services" },
     { label: "Contact", path: "/contact" },
   ];
+
+  useEffect(() => {
+    const childrenArray = Array.from(linksRef.current.children);
+    if (childrenArray) {
+      childrenArray.forEach((child) => {
+        child.addEventListener("click", () => {
+          setActiveMobileNav(false);
+        });
+      });
+    }
+  }, []);
 
   // Update `data-theme` on the <html> element whenever the theme changes
   useEffect(() => {
@@ -124,6 +138,7 @@ function Nav() {
               transform: isActiveMobileNav ? "" : "translateY(100%)",
               borderRadius: isActiveMobileNav ? "20px 20px 0 0" : "",
             }}
+            ref={linksRef}
           >
             {links.map((link) => (
               <NavLink

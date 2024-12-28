@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SignUpImg from "../../assets/sign-up.jpg";
 import { Button, Container, TextField } from "@mui/material";
 import "./SignUp.css";
+import { Link } from "react-router-dom";
 
 function SignUp() {
   const [name, setName] = useState(null);
@@ -11,8 +12,8 @@ function SignUp() {
   return (
     <section
       style={{
-        paddingTop: "20px",
-        height: "100%",
+        // paddingTop: "50px",
+        height: "100vh",
         width: "100%",
         display: "flex",
         justifyContent: "center",
@@ -41,6 +42,7 @@ function SignUp() {
             <div
               className="sign-up-left"
               style={{
+                height: "100%",
                 width: "400px",
               }}
             >
@@ -126,6 +128,26 @@ function SignUp() {
               >
                 Sign Up
               </Button>
+              <div>
+                <p
+                  style={{
+                    color: "var(--text-color)",
+                  }}
+                >
+                  Already you have account?
+                  <Link
+                    to={"/login"}
+                    style={{
+                      color: "var(--text-color)",
+                      marginLeft: "6px",
+                      fontSize: "16px",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Login here!
+                  </Link>
+                </p>
+              </div>
             </div>
           </div>
         </div>
