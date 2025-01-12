@@ -1,17 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LoginImg from "../../assets/login.jpg";
 import { Button, Container, TextField } from "@mui/material";
 import "./Login.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { login } from "../../store/action/userAction";
+import { clearDuplicateForEmail } from "../../store/action/duplicateAction";
 
 function Login() {
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(true);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const duplicateEmail = useSelector(
+    (state) => state.duplicates?.duplicateEmail
+  );
+
+  useEffect(() => {
+    if (duplicateEmail) {
+      setEmail(duplicateEmail);
+    }
+  }, [duplicateEmail]);
+
+  const userDetails = JSON.parse(localStorage.getItem("userDetails")) || [];
+
+  // Validate the form
+  const validateForm = () => email.trim().toLowerCase() && password.trim();
+
+  const handleInputChange = (setter) => (e) => {
+    setter(e.target.value);
+    setError(!validateForm());
+  };
+
+  const handleLogin = () => {
+    const user = userDetails.find(
+      (item) => item.email === email.trim().toLowerCase()
+    );
+
+    if (!user) {
+      toast.error("Incorrect email address");
+      return;
+    }
+
+    if (user.password !== password) {
+      toast.error("Incorrect password");
+      return;
+    }
+
+    toast.success("User logged in successfully");
+
+    // Dispatch login action and clear duplicate email if necessary
+    dispatch(login(user));
+    if (duplicateEmail) dispatch(clearDuplicateForEmail());
+
+    navigate("/dashboard");
+  };
 
   return (
     <section
       style={{
-        // paddingTop: "50px",
         height: "100vh",
         width: "100%",
         display: "flex",
@@ -19,11 +69,7 @@ function Login() {
         alignItems: "center",
       }}
     >
-      <Container
-        style={{
-          margin: "0 auto",
-        }}
-      >
+      <Container>
         <div className="main-login">
           <div
             className="login-container"
@@ -38,12 +84,10 @@ function Login() {
               alignItems: "center",
             }}
           >
+            {/* Left Section */}
             <div
               className="login-left"
-              style={{
-                height: "100%",
-                width: "400px",
-              }}
+              style={{ height: "100%", width: "400px" }}
             >
               <img
                 style={{
@@ -52,9 +96,11 @@ function Login() {
                   borderRadius: "2rem 0 0 2rem",
                 }}
                 src={LoginImg}
-                alt="sign-img"
+                alt="login"
               />
             </div>
+
+            {/* Right Section */}
             <div
               className="login-right"
               style={{
@@ -65,64 +111,55 @@ function Login() {
                 width: "350px",
               }}
             >
-              <div>
-                <h1
-                  className="login-title"
-                  style={{
-                    margin: "0px",
-                    color: "var(--text-color)",
-                  }}
-                >
-                  Login
-                </h1>
-              </div>
+              <h1
+                className="login-title text-[var(--section-bg)] font-bold text-2xl md:text-3xl"
+                style={{ margin: "0px", color: "var(--text-color)" }}
+              >
+                Login
+              </h1>
+
+              {/* Email Field */}
               <TextField
-                style={{
-                  color: "white",
-                }}
                 color="secondary"
-                id="filled-basic"
                 label="Your email"
                 variant="filled"
                 margin="normal"
                 value={email}
                 type="email"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleInputChange(setEmail)}
               />
+
+              {/* Password Field */}
               <TextField
-                style={{
-                  color: "white",
-                }}
                 color="secondary"
-                id="filled-basic"
                 label="Your password"
                 variant="filled"
                 margin="normal"
                 value={password}
                 type="password"
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handleInputChange(setPassword)}
               />
 
+              {/* Login Button */}
               <Button
                 variant="contained"
                 style={{
                   marginTop: "10px",
                   padding: "10px",
-                  backgroundColor: "var(--button-bg)",
+                  backgroundColor: error ? "gray" : "var(--button-bg)",
                   color: "var(--text-color)",
                 }}
+                disabled={error}
+                onClick={handleLogin}
               >
                 Login
               </Button>
-              <div>
-                <p
-                  style={{
-                    color: "var(--text-color)",
-                  }}
-                >
-                  haven't account?
+
+              <div className="mt-4 flex flex-col gap-3">
+                <p style={{ color: "var(--text-color)" }}>
+                  Haven't an account?
                   <Link
-                    to={"/sign-up"}
+                    to="/sign-up"
                     style={{
                       color: "var(--text-color)",
                       marginLeft: "6px",
@@ -131,6 +168,15 @@ function Login() {
                     }}
                   >
                     Sign-UP here!
+                  </Link>
+                </p>
+
+                <p>
+                  <Link
+                    to="/forget-password"
+                    className="text-[var(--text-color)] hover:text-[var(--heading-color)] text-[16px]"
+                  >
+                    Forget your password?
                   </Link>
                 </p>
               </div>

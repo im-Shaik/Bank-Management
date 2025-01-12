@@ -2,17 +2,67 @@ import React, { useState } from "react";
 import SignUpImg from "../../assets/sign-up.jpg";
 import { Button, Container, TextField } from "@mui/material";
 import "./SignUp.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { duplicateForEmail } from "../../store/action/duplicateAction";
 
 function SignUp() {
-  const [name, setName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(true);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const validateForm = () => {
+    return name.trim() && email.trim() && password.trim();
+  };
+
+  const handleSignUp = () => {
+    if (!name.trim() || !email.trim() || !password.trim()) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    const userDetails = {
+      id: uuidv4(),
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      role: "customer",
+      password,
+    };
+
+    const data = JSON.parse(localStorage.getItem("userDetails")) || [];
+
+    const isDuplicate = data.some((user) => user.email === userDetails.email);
+    if (isDuplicate) {
+      dispatch(duplicateForEmail(email));
+      toast.info("Your email already exists please login");
+      navigate("/login");
+      return;
+    }
+
+    localStorage.setItem("userDetails", JSON.stringify([...data, userDetails]));
+    toast.success("User created successfully!");
+    navigate("/login");
+
+    // Reset form fields
+    setName("");
+    setEmail("");
+    setPassword("");
+    setError(true);
+  };
+
+  const handleInputChange = (setter) => (e) => {
+    setter(e.target.value);
+    setError(!validateForm());
+  };
 
   return (
     <section
       style={{
-        // paddingTop: "50px",
         height: "100vh",
         width: "100%",
         display: "flex",
@@ -20,11 +70,7 @@ function SignUp() {
         alignItems: "center",
       }}
     >
-      <Container
-        style={{
-          margin: "0 auto",
-        }}
-      >
+      <Container>
         <div className="main-sign-up">
           <div
             className="sign-up-container"
@@ -66,75 +112,61 @@ function SignUp() {
                 width: "350px",
               }}
             >
-              <div>
-                <h1
-                  className="sign-up-title"
-                  style={{
-                    margin: "0px",
-                    color: "var(--text-color)",
-                  }}
-                >
-                  Sign-Up
-                </h1>
-              </div>
-              <TextField
+              <h1
+                className="sign-up-title text-[var(--section-bg)] font-bold text-2xl md:text-3xl"
                 style={{
-                  color: "white",
+                  margin: "0px",
+                  color: "var(--text-color)",
                 }}
+              >
+                Sign-Up
+              </h1>
+              <TextField
                 color="secondary"
-                id="filled-basic"
                 label="Your name"
                 variant="filled"
                 margin="normal"
                 value={name}
-                type="name"
-                onChange={(e) => setName(e.target.value)}
+                onChange={handleInputChange(setName)}
               />
               <TextField
-                style={{
-                  color: "white",
-                }}
                 color="secondary"
-                id="filled-basic"
                 label="Your email"
                 variant="filled"
                 margin="normal"
                 value={email}
-                type="email"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleInputChange(setEmail)}
               />
               <TextField
-                style={{
-                  color: "white",
-                }}
                 color="secondary"
-                id="filled-basic"
                 label="Your password"
                 variant="filled"
                 margin="normal"
-                value={password}
                 type="password"
-                onChange={(e) => setPassword(e.target.value)}
+                value={password}
+                onChange={handleInputChange(setPassword)}
               />
-
               <Button
                 variant="contained"
                 style={{
                   marginTop: "10px",
                   padding: "10px",
-                  backgroundColor: "var(--button-bg)",
+                  backgroundColor: error ? "gray" : "var(--button-bg)",
                   color: "var(--text-color)",
+                  cursor: error ? "not-allowed" : "pointer",
                 }}
+                onClick={handleSignUp}
+                disabled={error}
               >
                 Sign Up
               </Button>
-              <div>
+              <div className="mt-4">
                 <p
                   style={{
                     color: "var(--text-color)",
                   }}
                 >
-                  Already you have account?
+                  Already have an account?
                   <Link
                     to={"/login"}
                     style={{

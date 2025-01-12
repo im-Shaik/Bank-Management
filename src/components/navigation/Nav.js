@@ -3,14 +3,18 @@ import React, { useEffect, useRef, useState } from "react";
 import "./Nav.css";
 
 import { NavLink } from "react-router-dom";
-import { CgMenuLeft, CgClose } from "react-icons/cg";
+import { CgMenuLeft } from "react-icons/cg";
 import { MdDarkMode, MdLightMode } from "react-icons/md";
 import { Container } from "@mui/material";
 import { throttle } from "lodash";
+import BackgroundLetterAvatars from "../mini-components/BackgroundLetterAvatars";
+import { useSelector } from "react-redux";
 
 function Nav() {
   const [isActiveMobileNav, setActiveMobileNav] = useState(false);
   const [isDarkMode, setDarkMode] = useState(false);
+  const [visibleOverlay, setVisibleOverlay] = useState(false);
+  const overlayRef = useRef(null);
   const navbarRef = useRef(null);
   const linksRef = useRef(null);
   const [theme, setTheme] = useState(() => {
@@ -18,12 +22,17 @@ function Nav() {
     return localStorage.getItem("theme") || "light";
   });
 
+  const [user, setUser] = useState(null);
+  const userAuthenticate = useSelector((state) => state.loginReducer);
+  const isAuthenticated = userAuthenticate?.isAuthenticated;
+
   const links = [
     { label: "Home", path: "/" },
     { label: "About", path: "/about" },
     { label: "Login", path: "/login" },
     { label: "Sign-up", path: "/sign-up" },
-    { label: "Services", path: "/services" },
+    { label: "Dashborad", path: "/dashboard" },
+    { label: "Services", path: "/service" },
     { label: "Contact", path: "/contact" },
   ];
 
@@ -33,6 +42,7 @@ function Nav() {
       childrenArray.forEach((child) => {
         child.addEventListener("click", () => {
           setActiveMobileNav(false);
+          setVisibleOverlay(false);
         });
       });
     }
@@ -40,8 +50,9 @@ function Nav() {
 
   // Update `data-theme` on the <html> element whenever the theme changes
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("theme", theme); // Save the theme to localStorage
+    const root = document.documentElement;
+    root.setAttribute("data-theme", theme);
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
   useEffect(() => {
@@ -53,7 +64,7 @@ function Nav() {
           navbarRef.current.classList.remove("sticky");
         }
       }
-    }, 100); // Throttle to run at most every 100ms
+    }, 100);
 
     handleScroll();
 
@@ -66,6 +77,27 @@ function Nav() {
     };
   }, []);
 
+  // for overlay
+  useEffect(() => {
+    const overLayElem = overlayRef.current;
+
+    if (overLayElem) {
+      overLayElem.addEventListener("click", () => {
+        setVisibleOverlay(false);
+        setActiveMobileNav(false);
+      });
+    }
+  }, []);
+
+  // for user
+  useEffect(() => {
+    if (isAuthenticated) {
+      setUser(userAuthenticate);
+    } else {
+      setUser(null);
+    }
+  }, [isAuthenticated, userAuthenticate]);
+
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
   };
@@ -77,7 +109,15 @@ function Nav() {
         backgroundColor: "var(--section-bg)",
         transition: "all 0.6s",
       }}
+      className="p-3"
     >
+      <div
+        ref={overlayRef}
+        className="overlay"
+        style={{
+          visibility: visibleOverlay ? "visible" : "hidden",
+        }}
+      ></div>
       <Container
         style={{
           margin: "0 auto",
@@ -96,17 +136,16 @@ function Nav() {
               cursor: "pointer",
               justifySelf: "flex-end",
             }}
-            onClick={() => setActiveMobileNav((prev) => !prev)}
+            onClick={() => {
+              setActiveMobileNav((prev) => !prev);
+              setVisibleOverlay((prev) => !prev);
+            }}
           >
-            {isActiveMobileNav ? (
-              <CgClose size={25} color="var(--text-color)" cursor={"pointer"} />
-            ) : (
-              <CgMenuLeft
-                size={25}
-                color="var(--text-color)"
-                cursor={"pointer"}
-              />
-            )}
+            <CgMenuLeft
+              size={25}
+              color="var(--text-color)"
+              cursor={"pointer"}
+            />
           </div>
           {/* desktop nav */}
           <div
@@ -155,25 +194,28 @@ function Nav() {
               </NavLink>
             ))}
           </div>
-          <div
-            onClick={() => {
-              toggleTheme();
-              setDarkMode((prev) => !prev);
-            }}
-          >
-            {isDarkMode ? (
-              <MdDarkMode
-                size={25}
-                color="var(--text-color)"
-                cursor={"pointer"}
-              />
-            ) : (
-              <MdLightMode
-                size={25}
-                color="var(--text-color)"
-                cursor={"pointer"}
-              />
-            )}
+          <div className="flex gap-3 items-center">
+            <div
+              onClick={() => {
+                toggleTheme();
+                setDarkMode((prev) => !prev);
+              }}
+            >
+              {isDarkMode ? (
+                <MdDarkMode
+                  size={25}
+                  color="var(--text-color)"
+                  cursor={"pointer"}
+                />
+              ) : (
+                <MdLightMode
+                  size={25}
+                  color="var(--text-color)"
+                  cursor={"pointer"}
+                />
+              )}
+            </div>
+            <div>{user ? <BackgroundLetterAvatars /> : <></>}</div>
           </div>
         </div>
       </Container>

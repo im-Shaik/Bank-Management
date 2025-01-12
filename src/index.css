@@ -1,3 +1,8 @@
+/* tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* variable */
 /* for dark-theme */
 [data-theme="dark"] {
@@ -9,6 +14,7 @@
   --border: #b1668e;
   --text-color: #f5f5f5;
   --para-color: #cccccc;
+  --heading-color: #e942ac;
 }
 
 [data-theme="light"] {
@@ -20,20 +26,30 @@
   --border: #ddd;
   --text-color: #333;
   --para-color: #666;
+  --heading-color: #491235;
 }
 
 * {
   /* border: 1px solid red; */
 }
 
+html,
+*::before,
+*::after,
+*,
 body {
+  scroll-behavior: smooth;
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html {
   background-color: var(--main-bg);
 }
 
