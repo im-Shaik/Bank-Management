@@ -30,7 +30,7 @@ export const routers = createBrowserRouter([
         ),
       },
       {
-        path: "settings",
+        path: "settings/:id",
         element: (
           <ProtectRouter>
             <Settings />
@@ -38,7 +38,7 @@ export const routers = createBrowserRouter([
         ),
       },
       {
-        path: "admin-dashboard:name",
+        path: "admin-dashboard",
         element: (
           <ProtectRouter>
             <AdminDashboard />

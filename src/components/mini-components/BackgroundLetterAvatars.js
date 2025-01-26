@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Avatar, Menu, MenuItem, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../store/action/userAction";
+import { toast } from "react-toastify";
 
 export default function BackgroundLetterAvatars() {
   const [anchorElUser, setAnchorElUser] = useState(null);
@@ -15,6 +16,7 @@ export default function BackgroundLetterAvatars() {
   const handleLogout = () => {
     dispatch(logout());
     navigate("/");
+    toast.success("Thank-you come again.. ");
   };
 
   function stringToColor(string) {
@@ -111,7 +113,7 @@ export default function BackgroundLetterAvatars() {
             Logout
           </Typography>
         </MenuItem>
-        <MenuItem onClick={() => navigate(`/settings`)}>
+        <MenuItem onClick={() => navigate(`/settings/${user.id}`)}>
           <Typography sx={{ textAlign: "center" }}>Settings</Typography>
         </MenuItem>
       </Menu>

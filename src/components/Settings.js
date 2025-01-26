@@ -1,7 +1,9 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 
 function Settings() {
-  return <div>Settings</div>;
+  const { id } = useParams();
+  return <div className="container mx-auto "></div>;
 }
 
 export default Settings;

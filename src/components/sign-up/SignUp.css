@@ -1,4 +1,4 @@
-.sign-up-container .MuiInputBase-root {
+/* .sign-up-container .MuiInputBase-root {
   width: 100% !important;
   border-radius: 15px !important;
   color: var(--text-color) !important;
@@ -7,7 +7,7 @@
 .sign-up-container .MuiInputBase-root::before,
 .sign-up-container .MuiInputBase-root::after {
   display: none !important;
-}
+} */
 
 /* mobile */
 @media only screen and (max-width: 768px) {
@@ -15,10 +15,10 @@
     display: none;
   }
 
-  .sign-up-container .MuiContainer-root {
+  /* .sign-up-container .MuiContainer-root {
     width: 100% !important;
     padding: 0 !important;
-  }
+  } */
 
   .sign-up-container {
     display: flex !important;

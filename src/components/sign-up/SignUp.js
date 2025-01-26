@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import SignUpImg from "../../assets/sign-up.jpg";
-import { Button, Container, TextField } from "@mui/material";
+import { Button } from "@mui/material";
 import "./SignUp.css";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { duplicateForEmail } from "../../store/action/duplicateAction";
+import InputBox from "../mini-components/InputBox";
 
 function SignUp() {
   const [name, setName] = useState("");
@@ -70,7 +71,7 @@ function SignUp() {
         alignItems: "center",
       }}
     >
-      <Container>
+      <div className="container mx-auto">
         <div className="main-sign-up">
           <div
             className="sign-up-container"
@@ -105,7 +106,7 @@ function SignUp() {
             <div
               className="sign-up-right"
               style={{
-                justifySelf: "flex-end",
+                justifySelf: "center",
                 padding: "1rem",
                 display: "flex",
                 flexDirection: "column",
@@ -121,30 +122,25 @@ function SignUp() {
               >
                 Sign-Up
               </h1>
-              <TextField
-                color="secondary"
-                label="Your name"
-                variant="filled"
-                margin="normal"
+
+              <InputBox
+                lable={"Name"}
                 value={name}
-                onChange={handleInputChange(setName)}
+                fun={handleInputChange(setName)}
+                type={"name"}
               />
-              <TextField
-                color="secondary"
-                label="Your email"
-                variant="filled"
-                margin="normal"
+              <InputBox
+                lable={"Email"}
                 value={email}
-                onChange={handleInputChange(setEmail)}
+                fun={handleInputChange(setEmail)}
+                type={"email"}
               />
-              <TextField
-                color="secondary"
-                label="Your password"
-                variant="filled"
-                margin="normal"
-                type="password"
+
+              <InputBox
+                lable={"Password"}
                 value={password}
-                onChange={handleInputChange(setPassword)}
+                fun={handleInputChange(setPassword)}
+                type={"password"}
               />
               <Button
                 variant="contained"
@@ -183,7 +179,7 @@ function SignUp() {
             </div>
           </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

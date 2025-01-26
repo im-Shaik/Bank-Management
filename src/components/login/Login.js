@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import LoginImg from "../../assets/login.jpg";
-import { Button, Container, TextField } from "@mui/material";
+import { Button } from "@mui/material";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../store/action/userAction";
 import { clearDuplicateForEmail } from "../../store/action/duplicateAction";
+import InputBox from "../mini-components/InputBox";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(true);
+  const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -35,28 +37,38 @@ function Login() {
     setError(!validateForm());
   };
 
+  const validate = (person) => {
+    const newErrors = {};
+    if (!person) {
+      newErrors.email = "Incorrect email address";
+    }
+
+    if (person?.password !== password) {
+      newErrors.password = "Incorrect user password";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleLogin = () => {
     const user = userDetails.find(
       (item) => item.email === email.trim().toLowerCase()
     );
 
-    if (!user) {
-      toast.error("Incorrect email address");
-      return;
+    if (validate(user)) {
+      toast.success("User logged in successfully");
+
+      // Dispatch login action and clear duplicate email if necessary
+      dispatch(login(user));
+      if (duplicateEmail) dispatch(clearDuplicateForEmail());
+
+      if (user.role === "admin") {
+        navigate(`/admin-dashboard`);
+      } else {
+        navigate("/dashboard");
+      }
     }
-
-    if (user.password !== password) {
-      toast.error("Incorrect password");
-      return;
-    }
-
-    toast.success("User logged in successfully");
-
-    // Dispatch login action and clear duplicate email if necessary
-    dispatch(login(user));
-    if (duplicateEmail) dispatch(clearDuplicateForEmail());
-
-    navigate("/dashboard");
   };
 
   return (
@@ -69,25 +81,25 @@ function Login() {
         alignItems: "center",
       }}
     >
-      <Container>
+      <div className="container mx-auto">
         <div className="main-login">
           <div
-            className="login-container"
+            className="login-container w-full md:w-[76%]"
             style={{
               backgroundColor: "var(--section-bg)",
               borderRadius: "2rem",
               height: "fit-content",
-              width: "70%",
+              // width: "70%",
               margin: "0 auto",
               display: "grid",
-              gridTemplateColumns: "1fr 2fr",
+              gridTemplateColumns: "1fr 1fr",
               alignItems: "center",
             }}
           >
             {/* Left Section */}
             <div
               className="login-left"
-              style={{ height: "100%", width: "400px" }}
+              style={{ height: "100%", width: "100%" }}
             >
               <img
                 style={{
@@ -104,7 +116,7 @@ function Login() {
             <div
               className="login-right"
               style={{
-                justifySelf: "flex-end",
+                justifySelf: "center",
                 padding: "1rem",
                 display: "flex",
                 flexDirection: "column",
@@ -119,25 +131,24 @@ function Login() {
               </h1>
 
               {/* Email Field */}
-              <TextField
-                color="secondary"
-                label="Your email"
-                variant="filled"
-                margin="normal"
+
+              <InputBox
+                lable={"Email"}
+                type={"email"}
+                fun={handleInputChange(setEmail)}
                 value={email}
-                type="email"
-                onChange={handleInputChange(setEmail)}
+                error={!!errors.email}
+                errorMsg={errors.email}
               />
 
               {/* Password Field */}
-              <TextField
-                color="secondary"
-                label="Your password"
-                variant="filled"
-                margin="normal"
+              <InputBox
+                lable={"Password"}
+                type={"password"}
+                fun={handleInputChange(setPassword)}
                 value={password}
-                type="password"
-                onChange={handleInputChange(setPassword)}
+                error={!!errors.password}
+                errorMsg={errors.password}
               />
 
               {/* Login Button */}
@@ -183,7 +194,7 @@ function Login() {
             </div>
           </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }

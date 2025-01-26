@@ -1,15 +1,15 @@
-import { Button, Container, TextField } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import InputBox from "./mini-components/InputBox";
 
 function ForgetPassword() {
   const [msg, setErrorMsg] = useState("Enter your email");
   const [userEmail, setUserEmail] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [appear, setAppear] = useState(false);
-  const [checked, setChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -94,25 +94,19 @@ function ForgetPassword() {
             <h1 className="mb-5 text-2px font-bold text-[var(--text-color)] md:text-3xl">
               Type your email here!
             </h1>
-            <TextField
-              fullWidth
-              color="secondary"
-              label={msg}
-              variant="filled"
-              margin="normal"
-              onChange={handleEmailChange}
+
+            <InputBox
+              lable={msg}
+              fun={handleEmailChange}
               value={userEmail}
+              type={"email"}
             />
             {appear && (
-              <TextField
-                fullWidth
-                color="secondary"
-                label="New Password"
-                variant="filled"
-                margin="normal"
-                type={checked ? "text" : "password"}
+              <InputBox
+                lable={"New Password"}
+                fun={handlePasswordChange}
                 value={userPassword}
-                onChange={handlePasswordChange}
+                type={"password"}
               />
             )}
             <div className="flex gap-3 items-center">
@@ -132,25 +126,6 @@ function ForgetPassword() {
               >
                 {isLoading ? "Loading..." : appear ? "Update Password" : "Next"}
               </Button>
-
-              {appear && (
-                <div>
-                  <input
-                    type="checkbox"
-                    className="accent-[var(--section-bg)]"
-                    checked={checked}
-                    onChange={() => setChecked((prev) => !prev)}
-                  />
-                  <label
-                    style={{
-                      marginLeft: "8px",
-                      color: "var(--text-color)",
-                    }}
-                  >
-                    Show Password
-                  </label>
-                </div>
-              )}
             </div>
           </div>
         </div>
